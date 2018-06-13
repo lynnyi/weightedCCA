@@ -26,15 +26,27 @@ iterate <- function(xlist, klist, ulist, w, kw)
 		u = append(u, list(update(tot, klist[[i]])))
 	}
 	tot = 0
-	for(i in 1:K)
+	for(i in 2:K)
 	{
-		for(j in 1:i)
+		for(j in 1:(i-1))
 		{
+		  print(dim(xlist[[j]]))
+		  print(dim(u[[j]]))
 			tot= tot + (xlist[[j]]%*%u[[j]]) * (xlist[[i]]%*%u[[i]])
 		}
 	}
 	print(dim(tot))
 	w = update(tot, kw)
-	return(list(xlist, klist, u, w, kw))
+	return(list(xlist=xlist, klist=klist, u=u, w=w, kw=kw))
 }
 
+J = 0
+i_old <- iterate(xlist, klist, ulist, w, kw)
+i <- do.call(iterate, i_old)
+while(sum((i[[4]] - i_old[[4]])^2) > 10e-16)
+{
+  J = J+1
+  print('loop')
+  i_old <- i
+  i <- do.call(iterate, i)
+}
